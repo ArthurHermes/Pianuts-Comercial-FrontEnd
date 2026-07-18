@@ -61,6 +61,6 @@ export const products: Product[] = [
 export const navItems = [
   { label: "Benefícios", href: "#beneficios" },
   { label: "Nossa essência", href: "#essencia" },
-  { label: "Produtos", href: "#produtos" },
+  { label: "Produtos", href: "/produtos" },
   { label: "Confiança", href: "#confianca" },
 ];

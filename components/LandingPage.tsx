@@ -2,15 +2,14 @@
 
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import {
-  ArrowDown, ArrowRight, Box, CheckCircle2, Globe2, Instagram, Leaf,
-  MessageCircle, PackageCheck, ScanLine, ShieldCheck, Sparkles, Sprout,
+  ArrowDown, ArrowRight, Box, CheckCircle2, Instagram, Leaf,
+  MessageCircle, PackageCheck, ScanLine, ShieldCheck, ShoppingBag, Sparkles, Sprout,
 } from "lucide-react";
 import Image from "next/image";
 import { useRef } from "react";
 import { Header } from "./Header";
-import { ProductShowcase } from "./ProductShowcase";
 import { Reveal } from "./Reveal";
-import { navItems, siteConfig } from "@/data/site";
+import { categories, navItems, products, siteConfig } from "@/data/site";
 import { withBasePath } from "@/lib/withBasePath";
 
 const benefits = [
@@ -25,6 +24,8 @@ const trustItems = [
   { icon: Box, title: "Embalagem cuidadosa", text: "Proteção pensada para conservar as características de cada ingrediente." },
   { icon: ShieldCheck, title: "Compra direta", text: "Navegue pelo catálogo e finalize pelo canal oficial da Piá Nuts." },
 ];
+
+const featuredProducts = products.filter((product) => product.featured).slice(0, 4);
 
 export function LandingPage() {
   const heroRef = useRef<HTMLElement>(null);
@@ -51,8 +52,8 @@ export function LandingPage() {
               Castanhas, frutas secas e aperitivos selecionados, embalados com cuidado para levar mais frescor, sabor e praticidade até você.
             </motion.p>
             <motion.div className="hero-actions" initial={reduceMotion ? false : { opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.28 }}>
-              <a className="button" href={siteConfig.storeUrl} target="_blank" rel="noreferrer">Conheça a loja <ArrowRight size={19} /></a>
-              <a className="text-link" href="#produtos">Explorar sabores <ArrowDown size={18} /></a>
+              <a className="button" href="/produtos">Ver catalogo <ArrowRight size={19} /></a>
+              <a className="text-link" href="/produtos">Explorar sabores <ArrowDown size={18} /></a>
             </motion.div>
             <motion.div className="hero-note" initial={reduceMotion ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.45 }}>
               <CheckCircle2 size={18} aria-hidden="true" /> Embalados a vácuo para preservar o que importa
@@ -115,7 +116,7 @@ export function LandingPage() {
               <div><span>02</span><section><h3>Proteção a vácuo</h3><p>Menor contato com o ar para ajudar a preservar textura e aroma.</p></section></div>
               <div><span>03</span><section><h3>Sabor pronto</h3><p>Da embalagem para o lanche, a receita ou a mesa compartilhada.</p></section></div>
             </div>
-            <a className="text-link dark" href={siteConfig.storeUrl} target="_blank" rel="noreferrer">Conhecer a Piá Nuts <ArrowRight size={18} /></a>
+            <a className="text-link dark" href="/produtos">Conhecer produtos <ArrowRight size={18} /></a>
           </Reveal>
         </div>
       </section>
@@ -124,9 +125,30 @@ export function LandingPage() {
         <div className="container">
           <Reveal className="section-heading products-heading">
             <div><span className="section-kicker light">Vitrine Piá Nuts</span><h2>Tem um sabor<br />para <em>cada momento.</em></h2></div>
-            <p>Explore nossa seleção e encontre o próximo favorito para sua rotina.</p>
+            <p>Veja alguns destaques por aqui. O catálogo completo, filtros e carrinho ficam em uma tela separada.</p>
           </Reveal>
-          <ProductShowcase />
+          <div className="preview-product-grid">
+            {featuredProducts.map((product) => (
+              <Reveal key={product.name}>
+                <article className="product-card">
+                  <div className="product-image">
+                    <Image src={withBasePath(product.image)} alt={product.name} fill sizes="(max-width: 620px) 86vw, (max-width: 1000px) 43vw, 24vw" />
+                    <span className="product-badge">Destaque</span>
+                  </div>
+                  <div className="product-copy">
+                    <span>{categories.find((category) => category.id === product.category)?.label}</span>
+                    <h3>{product.name}</h3>
+                    <p>{product.description}</p>
+                  </div>
+                </article>
+              </Reveal>
+            ))}
+          </div>
+          <Reveal className="products-preview-action">
+            <a className="button button-light" href="/produtos">
+              Abrir catalogo <ShoppingBag size={18} aria-hidden="true" />
+            </a>
+          </Reveal>
         </div>
       </section>
 
@@ -153,7 +175,7 @@ export function LandingPage() {
             <span className="section-kicker light">Seu próximo snack favorito</span>
             <h2>Mais sabor para<br /><em>os seus momentos.</em></h2>
             <p>Descubra a seleção Piá Nuts e escolha o que combina com você.</p>
-            <a className="button button-light" href={siteConfig.storeUrl} target="_blank" rel="noreferrer">Ir para a loja <ArrowRight size={20} /></a>
+            <a className="button button-light" href="/produtos">Ir para o catalogo <ArrowRight size={20} /></a>
           </Reveal>
           <div className="cta-mascot">
             <motion.div className="cta-mascot-motion" animate={reduceMotion ? undefined : { y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 4.8, ease: "easeInOut" }}>
@@ -167,7 +189,7 @@ export function LandingPage() {
         <div className="container footer-grid">
           <div className="footer-brand"><Image src={withBasePath("/brand/logo-horizontal.webp")} alt="Piá Nuts" width={220} height={92} /><p>Seleção, frescor e sabor para transformar pequenos momentos.</p></div>
           <div><h3>Navegue</h3>{navItems.map((item) => <a key={item.href} href={item.href}>{item.label}</a>)}</div>
-          <div><h3>Fale com a gente</h3><a href={siteConfig.whatsappUrl} target="_blank" rel="noreferrer"><MessageCircle size={17} /> {siteConfig.whatsappLabel}</a><a href={siteConfig.instagramUrl} target="_blank" rel="noreferrer"><Instagram size={17} /> {siteConfig.instagramLabel}</a><a href={siteConfig.storeUrl} target="_blank" rel="noreferrer"><Globe2 size={17} /> {siteConfig.domain}</a></div>
+          <div><h3>Fale com a gente</h3><a href={siteConfig.whatsappUrl} target="_blank" rel="noreferrer"><MessageCircle size={17} /> {siteConfig.whatsappLabel}</a><a href={siteConfig.instagramUrl} target="_blank" rel="noreferrer"><Instagram size={17} /> {siteConfig.instagramLabel}</a></div>
         </div>
         <div className="container footer-bottom"><span>© {new Date().getFullYear()} Piá Nuts. Todos os direitos reservados.</span><a href="#inicio">Voltar ao topo ↑</a></div>
       </footer>

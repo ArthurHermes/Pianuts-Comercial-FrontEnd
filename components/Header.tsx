@@ -4,12 +4,22 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Menu, ShoppingBag, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { navItems, siteConfig } from "@/data/site";
+import { navItems } from "@/data/site";
 import { withBasePath } from "@/lib/withBasePath";
 
-export function Header() {
+type HeaderProps = {
+  variant?: "home" | "internal";
+};
+
+export function Header({ variant = "home" }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const homeHref = variant === "home" ? "#inicio" : "/#inicio";
+  const productHref = "/produtos";
+  const getNavHref = (href: string) => {
+    if (href.startsWith("/")) return href;
+    return variant === "home" ? href : `/${href}`;
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -26,15 +36,15 @@ export function Header() {
   return (
     <header className={`site-header ${scrolled ? "is-scrolled" : ""}`}>
       <div className="container header-inner">
-        <a className="brand" href="#inicio" aria-label="Piá Nuts — início" onClick={() => setOpen(false)}>
-          <Image src={withBasePath("/brand/logo-horizontal.webp")} alt="Piá Nuts" width={174} height={74} priority />
+        <a className="brand" href={homeHref} aria-label="Pia Nuts - inicio" onClick={() => setOpen(false)}>
+          <Image src={withBasePath("/brand/logo-horizontal.webp")} alt="Pia Nuts" width={174} height={74} priority />
         </a>
 
-        <nav className="desktop-nav" aria-label="Navegação principal">
-          {navItems.map((item) => <a key={item.href} href={item.href}>{item.label}</a>)}
+        <nav className="desktop-nav" aria-label="Navegacao principal">
+          {navItems.map((item) => <a key={item.href} href={getNavHref(item.href)}>{item.label}</a>)}
         </nav>
 
-        <a className="button button-small header-cta" href={siteConfig.storeUrl} target="_blank" rel="noreferrer">
+        <a className="button button-small header-cta" href={productHref}>
           Comprar agora <ShoppingBag size={17} aria-hidden="true" />
         </a>
 
@@ -45,13 +55,13 @@ export function Header() {
 
       <AnimatePresence>
         {open && (
-          <motion.nav className="mobile-nav" aria-label="Navegação móvel" initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}>
+          <motion.nav className="mobile-nav" aria-label="Navegacao movel" initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}>
             {navItems.map((item, index) => (
-              <motion.a key={item.href} href={item.href} onClick={() => setOpen(false)} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.05 }}>
+              <motion.a key={item.href} href={getNavHref(item.href)} onClick={() => setOpen(false)} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.05 }}>
                 <span>0{index + 1}</span>{item.label}
               </motion.a>
             ))}
-            <a className="button" href={siteConfig.storeUrl} target="_blank" rel="noreferrer">Ir para a loja <ShoppingBag size={18} /></a>
+            <a className="button" href={productHref} onClick={() => setOpen(false)}>Ver produtos <ShoppingBag size={18} /></a>
           </motion.nav>
         )}
       </AnimatePresence>
