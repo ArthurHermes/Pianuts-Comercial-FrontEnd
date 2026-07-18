@@ -116,7 +116,7 @@ export function LandingPage() {
               <div><span>02</span><section><h3>Proteção a vácuo</h3><p>Menor contato com o ar para ajudar a preservar textura e aroma.</p></section></div>
               <div><span>03</span><section><h3>Sabor pronto</h3><p>Da embalagem para o lanche, a receita ou a mesa compartilhada.</p></section></div>
             </div>
-            <a className="text-link dark" href="/produtos">Conhecer produtos <ArrowRight size={18} /></a>
+            <a className="text-link dark" href={withBasePath("/produtos/")}>Conhecer produtos <ArrowRight size={18} /></a>
           </Reveal>
         </div>
       </section>

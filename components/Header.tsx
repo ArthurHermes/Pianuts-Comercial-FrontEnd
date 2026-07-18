@@ -15,7 +15,7 @@ export function Header({ variant = "home" }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const homeHref = variant === "home" ? "#inicio" : "/#inicio";
-  const productHref = "/produtos";
+  const productHref = withBasePath("/produtos/");
   const getNavHref = (href: string) => {
     if (href.startsWith("/")) return href;
     return variant === "home" ? href : `/${href}`;
