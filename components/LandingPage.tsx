@@ -52,8 +52,8 @@ export function LandingPage() {
               Castanhas, frutas secas e aperitivos selecionados, embalados com cuidado para levar mais frescor, sabor e praticidade até você.
             </motion.p>
             <motion.div className="hero-actions" initial={reduceMotion ? false : { opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.28 }}>
-              <a className="button" href="/produtos">Ver catalogo <ArrowRight size={19} /></a>
-              <a className="text-link" href="/produtos">Explorar sabores <ArrowDown size={18} /></a>
+              <a className="button" href={withBasePath("/produtos/")}>Ver catalogo <ArrowRight size={19} /></a>
+              <a className="text-link" href={withBasePath("/produtos/")}>Explorar sabores <ArrowDown size={18} /></a>
             </motion.div>
             <motion.div className="hero-note" initial={reduceMotion ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.45 }}>
               <CheckCircle2 size={18} aria-hidden="true" /> Embalados a vácuo para preservar o que importa
