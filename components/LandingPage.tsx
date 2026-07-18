@@ -11,6 +11,7 @@ import { Header } from "./Header";
 import { ProductShowcase } from "./ProductShowcase";
 import { Reveal } from "./Reveal";
 import { navItems, siteConfig } from "@/data/site";
+import { withBasePath } from "@/lib/withBasePath";
 
 const benefits = [
   { icon: PackageCheck, index: "01", title: "Frescor preservado", text: "Embalagens a vácuo ajudam a proteger textura, aroma e sabor por mais tempo." },
@@ -64,14 +65,14 @@ export function LandingPage() {
             <div className="sun-shape" aria-hidden="true" />
             <div className="hero-mascot">
               <motion.div className="hero-mascot-motion" animate={reduceMotion ? undefined : { y: [0, -12, 0], rotate: [0, 1.5, 0] }} transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}>
-                <Image src="/brand/mascote-original-v2.webp" alt="Mascote Piá Nuts fazendo sinal de positivo" fill priority sizes="(max-width: 800px) 72vw, 42vw" />
+                <Image src={withBasePath("/brand/mascote-original-v2.webp")} alt="Mascote Piá Nuts fazendo sinal de positivo" fill priority sizes="(max-width: 800px) 72vw, 42vw" />
               </motion.div>
             </div>
             <motion.div className="floating-product floating-one" animate={reduceMotion ? undefined : { y: [0, 10, 0], rotate: [-7, -4, -7] }} transition={{ duration: 4.4, repeat: Infinity, ease: "easeInOut" }}>
-              <Image src="/products/pistache.webp" alt="Pistaches" fill sizes="150px" />
+              <Image src={withBasePath("/products/pistache.webp")} alt="Pistaches" fill sizes="150px" />
             </motion.div>
             <motion.div className="floating-product floating-two" animate={reduceMotion ? undefined : { y: [0, -9, 0], rotate: [8, 4, 8] }} transition={{ duration: 5.1, repeat: Infinity, ease: "easeInOut" }}>
-              <Image src="/products/mix-vegetais.webp" alt="Mix de vegetais" fill sizes="130px" />
+              <Image src={withBasePath("/products/mix-vegetais.webp")} alt="Mix de vegetais" fill sizes="130px" />
             </motion.div>
             <div className="quality-pill"><span>Feito com</span><strong>cuidado</strong></div>
           </motion.div>
@@ -101,8 +102,8 @@ export function LandingPage() {
       <section id="essencia" className="section essence-section">
         <div className="container essence-grid">
           <Reveal className="essence-visual">
-            <div className="photo-frame"><Image src="/products/caju-sem-sal.webp" alt="Castanhas de caju selecionadas" fill sizes="(max-width: 800px) 90vw, 45vw" /></div>
-            <div className="stamp"><Image src="/brand/stamp.webp" alt="Selo Piá Nuts" fill sizes="150px" /></div>
+            <div className="photo-frame"><Image src={withBasePath("/products/caju-sem-sal.webp")} alt="Castanhas de caju selecionadas" fill sizes="(max-width: 800px) 90vw, 45vw" /></div>
+            <div className="stamp"><Image src={withBasePath("/brand/stamp.webp")} alt="Selo Piá Nuts" fill sizes="150px" /></div>
             <div className="floating-label"><Leaf size={18} /><span>Da seleção<br /><strong>à sua mesa</strong></span></div>
           </Reveal>
           <Reveal className="essence-copy" delay={0.12}>
@@ -132,7 +133,7 @@ export function LandingPage() {
       <section id="confianca" className="section trust-section">
         <div className="container">
           <Reveal className="trust-intro">
-            <div className="mini-mascot"><Image src="/brand/mascote-original-v2.webp" alt="" fill sizes="110px" /></div>
+            <div className="mini-mascot"><Image src={withBasePath("/brand/mascote-original-v2.webp")} alt="" fill sizes="110px" /></div>
             <div><span className="section-kicker">Confiança se constrói</span><h2>Clareza para escolher.<br /><em>Cuidado para saborear.</em></h2></div>
           </Reveal>
           <div className="trust-grid">
@@ -156,7 +157,7 @@ export function LandingPage() {
           </Reveal>
           <div className="cta-mascot">
             <motion.div className="cta-mascot-motion" animate={reduceMotion ? undefined : { y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 4.8, ease: "easeInOut" }}>
-              <Image src="/brand/mascote-original-v2.webp" alt="Mascote Piá Nuts" fill sizes="330px" />
+              <Image src={withBasePath("/brand/mascote-original-v2.webp")} alt="Mascote Piá Nuts" fill sizes="330px" />
             </motion.div>
           </div>
         </div>
@@ -164,7 +165,7 @@ export function LandingPage() {
 
       <footer id="contato" className="footer">
         <div className="container footer-grid">
-          <div className="footer-brand"><Image src="/brand/logo-horizontal.webp" alt="Piá Nuts" width={220} height={92} /><p>Seleção, frescor e sabor para transformar pequenos momentos.</p></div>
+          <div className="footer-brand"><Image src={withBasePath("/brand/logo-horizontal.webp")} alt="Piá Nuts" width={220} height={92} /><p>Seleção, frescor e sabor para transformar pequenos momentos.</p></div>
           <div><h3>Navegue</h3>{navItems.map((item) => <a key={item.href} href={item.href}>{item.label}</a>)}</div>
           <div><h3>Fale com a gente</h3><a href={siteConfig.whatsappUrl} target="_blank" rel="noreferrer"><MessageCircle size={17} /> {siteConfig.whatsappLabel}</a><a href={siteConfig.instagramUrl} target="_blank" rel="noreferrer"><Instagram size={17} /> {siteConfig.instagramLabel}</a><a href={siteConfig.storeUrl} target="_blank" rel="noreferrer"><Globe2 size={17} /> {siteConfig.domain}</a></div>
         </div>

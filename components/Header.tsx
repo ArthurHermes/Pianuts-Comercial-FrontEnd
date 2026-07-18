@@ -5,6 +5,7 @@ import { Menu, ShoppingBag, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { navItems, siteConfig } from "@/data/site";
+import { withBasePath } from "@/lib/withBasePath";
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -26,7 +27,7 @@ export function Header() {
     <header className={`site-header ${scrolled ? "is-scrolled" : ""}`}>
       <div className="container header-inner">
         <a className="brand" href="#inicio" aria-label="Piá Nuts — início" onClick={() => setOpen(false)}>
-          <Image src="/brand/logo-horizontal.webp" alt="Piá Nuts" width={174} height={74} priority />
+          <Image src={withBasePath("/brand/logo-horizontal.webp")} alt="Piá Nuts" width={174} height={74} priority />
         </a>
 
         <nav className="desktop-nav" aria-label="Navegação principal">

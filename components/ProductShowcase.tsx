@@ -5,6 +5,7 @@ import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { categories, products, siteConfig, type CategoryId } from "@/data/site";
+import { withBasePath } from "@/lib/withBasePath";
 
 type Filter = "todos" | CategoryId;
 
@@ -52,7 +53,7 @@ export function ProductShowcase() {
               transition={{ duration: 0.32 }}
             >
               <div className="product-image">
-                <Image src={product.image} alt={product.name} fill sizes="(max-width: 620px) 86vw, (max-width: 1000px) 43vw, 28vw" />
+                <Image src={withBasePath(product.image)} alt={product.name} fill sizes="(max-width: 620px) 86vw, (max-width: 1000px) 43vw, 28vw" />
                 {product.featured && <span className="product-badge">Destaque</span>}
                 <a className="product-link" href={siteConfig.storeUrl} target="_blank" rel="noreferrer" aria-label={`Ver ${product.name} na loja`}>
                   <ArrowUpRight aria-hidden="true" />
