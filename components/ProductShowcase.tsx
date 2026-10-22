@@ -23,8 +23,8 @@ const cartKey = (product: Product, productPackage?: StockPackage) => `${product.
 // Each tag matches whole words (accent-insensitive) in the product name, description or category.
 const tagOptions = [
   { label: "Natural", terms: ["natural"] },
-  { label: "Torrada", terms: ["torrada", "torra"] },
-  { label: "Com sal", terms: ["com sal"] },
+  { label: "Torrada", terms: ["torrada", "torrado", "torra"] },
+  { label: "Com sal", terms: ["com sal", "salgado", "salgada"] },
   { label: "Sem sal", terms: ["sem sal", "sem adicao de sal"] },
   { label: "Doce", terms: ["doce", "docura", "adocicado", "caramelizada"] },
   { label: "Crocante", terms: ["crocante", "crocancia"] },
