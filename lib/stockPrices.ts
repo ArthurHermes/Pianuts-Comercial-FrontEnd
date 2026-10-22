@@ -11,13 +11,15 @@ export interface StockPackage {
 export interface StockProduct {
   id: number;
   name: string;
+  /** Name set in the stock system for the commercial site; null keeps the site's own name. */
+  siteName: string | null;
   category: string;
   packages: StockPackage[];
 }
 
 const apiUrl = (process.env.NEXT_PUBLIC_STOCK_API_URL ?? "https://pianuts-backend.vercel.app").replace(/\/+$/, "");
 
-const normalize = (value: string) => value.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
+const normalize = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
 
 /** Public sale prices from the stock control system (GET /public/prices). */
 export async function fetchStockPrices(signal?: AbortSignal): Promise<StockProduct[]> {
@@ -53,13 +55,24 @@ export function isHiddenOnSite(product: Product, stock: StockProduct[] | null) {
   return Boolean(stock && productId !== undefined && !stock.some((item) => item.id === productId));
 }
 
-/** Packages of the stock product linked to a site product: by id, then by name; optionally narrowed to one package. */
+/** Stock product linked to a site product: by id, then by name. */
+function findStockProduct(product: Product, stock: StockProduct[]) {
+  const link = product.stock;
+  if (link?.productId !== undefined) return stock.find((item) => item.id === link.productId);
+
+  const name = normalize(link?.name ?? product.name);
+  return stock.find((item) => normalize(item.name) === name);
+}
+
+/** Name shown on the site: the "Nome no site" from the stock system when set, else the site's own name. */
+export function getDisplayName(product: Product, stock: StockProduct[] | null) {
+  return (stock && findStockProduct(product, stock)?.siteName?.trim()) || product.name;
+}
+
+/** Packages of the stock product linked to a site product, optionally narrowed to one package. */
 export function findStockPackages(product: Product, stock: StockProduct[]): StockPackage[] {
   const link = product.stock;
-  const name = normalize(link?.name ?? product.name);
-  const match = link?.productId !== undefined
-    ? stock.find((item) => item.id === link.productId)
-    : stock.find((item) => normalize(item.name) === name);
+  const match = findStockProduct(product, stock);
 
   if (!match) return [];
   if (!link?.packageLabel) return match.packages;

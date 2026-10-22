@@ -5,7 +5,7 @@ import { ChevronDown, MessageCircle, Minus, Plus, Search, SlidersHorizontal, Sho
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { categories, products, siteConfig, type CategoryId, type Product } from "@/data/site";
-import { findStockPackages, formatPackage, formatPrice, isHiddenOnSite, useStockPrices, type StockPackage } from "@/lib/stockPrices";
+import { findStockPackages, formatPackage, formatPrice, getDisplayName, isHiddenOnSite, useStockPrices, type StockPackage } from "@/lib/stockPrices";
 import { withBasePath } from "@/lib/withBasePath";
 
 type Filter = "todos" | CategoryId;
@@ -50,9 +50,10 @@ export function ProductShowcase() {
     return products.filter((product) => {
       if (isHiddenOnSite(product, stock)) return false;
       const category = categories.find((item) => item.id === product.category)?.label ?? "";
-      const haystack = normalize([product.name, product.description, category].join(" "));
+      const displayName = getDisplayName(product, stock);
+      const haystack = normalize([displayName, product.description, category].join(" "));
       const matchesCategory = active === "todos" || product.category === active;
-      const matchesSearch = !term || normalize(product.name).includes(term);
+      const matchesSearch = !term || normalize(displayName).includes(term);
       const matchesTags = activeTags.length === 0 || activeTags.every((label) => tagOptions.find((tag) => tag.label === label)?.terms.some((term) => hasWord(haystack, term)));
       return matchesCategory && matchesSearch && matchesTags;
     });
@@ -96,7 +97,7 @@ export function ProductShowcase() {
       const hasChoice = getPackages(product).length > 1;
       return [...items, {
         key,
-        name: product.name,
+        name: getDisplayName(product, stock),
         image: product.image,
         packageLabel: hasChoice && productPackage ? formatPackage(productPackage) : undefined,
         unitPrice: productPackage?.salePrice ?? null,
@@ -196,6 +197,7 @@ export function ProductShowcase() {
               const selected = getSelectedPackage(product);
               const key = cartKey(product, selected);
               const quantity = getQuantity(key);
+              const displayName = getDisplayName(product, stock);
 
               return (
                 <motion.article
@@ -208,15 +210,15 @@ export function ProductShowcase() {
                   transition={{ duration: 0.32 }}
                 >
                   <div className="product-image">
-                    <Image src={withBasePath(product.image)} alt={product.name} fill sizes="(max-width: 620px) 86vw, (max-width: 1000px) 43vw, 24vw" />
+                    <Image src={withBasePath(product.image)} alt={displayName} fill sizes="(max-width: 620px) 86vw, (max-width: 1000px) 43vw, 24vw" />
                     {product.featured && <span className="product-badge">Destaque</span>}
                   </div>
                   <div className="product-copy">
                     <span>{categories.find((category) => category.id === product.category)?.label}</span>
-                    <h3>{product.name}</h3>
+                    <h3>{displayName}</h3>
                     <p>{product.description}</p>
                     {packages.length > 1 && (
-                      <div className="package-options" role="group" aria-label={`Tamanhos de ${product.name}`}>
+                      <div className="package-options" role="group" aria-label={`Tamanhos de ${displayName}`}>
                         {packages.map((productPackage) => (
                           <button
                             key={productPackage.id}
@@ -242,12 +244,12 @@ export function ProductShowcase() {
                     </div>
                     <div className="product-actions">
                       {quantity > 0 ? (
-                        <div className="quantity-stepper" aria-label={`Quantidade de ${product.name}`}>
-                          <button type="button" onClick={() => decreaseQuantity(key)} aria-label={`Diminuir ${product.name}`}>
+                        <div className="quantity-stepper" aria-label={`Quantidade de ${displayName}`}>
+                          <button type="button" onClick={() => decreaseQuantity(key)} aria-label={`Diminuir ${displayName}`}>
                             <Minus size={16} aria-hidden="true" />
                           </button>
                           <strong>{quantity}</strong>
-                          <button type="button" onClick={() => addToCart(product, selected)} aria-label={`Adicionar mais ${product.name}`}>
+                          <button type="button" onClick={() => addToCart(product, selected)} aria-label={`Adicionar mais ${displayName}`}>
                             <Plus size={16} aria-hidden="true" />
                           </button>
                         </div>

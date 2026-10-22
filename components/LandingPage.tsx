@@ -11,7 +11,7 @@ import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { Reveal } from "./Reveal";
 import { categories, products } from "@/data/site";
-import { findStockPackages, formatPackage, formatPrice, isHiddenOnSite, useStockPrices } from "@/lib/stockPrices";
+import { findStockPackages, formatPackage, formatPrice, getDisplayName, isHiddenOnSite, useStockPrices } from "@/lib/stockPrices";
 import { withBasePath } from "@/lib/withBasePath";
 
 const benefits = [
@@ -141,12 +141,12 @@ export function LandingPage() {
               <Reveal key={product.name}>
                 <article className="product-card">
                   <div className="product-image">
-                    <Image src={withBasePath(product.image)} alt={product.name} fill sizes="(max-width: 620px) 86vw, (max-width: 1000px) 43vw, 24vw" />
+                    <Image src={withBasePath(product.image)} alt={getDisplayName(product, stock)} fill sizes="(max-width: 620px) 86vw, (max-width: 1000px) 43vw, 24vw" />
                     {product.featured && <span className="product-badge">Destaque</span>}
                   </div>
                   <div className="product-copy">
                     <span>{categories.find((category) => category.id === product.category)?.label}</span>
-                    <h3>{product.name}</h3>
+                    <h3>{getDisplayName(product, stock)}</h3>
                     <p>{product.description}</p>
                     {(() => {
                       const [firstPackage] = stock ? findStockPackages(product, stock) : [];
