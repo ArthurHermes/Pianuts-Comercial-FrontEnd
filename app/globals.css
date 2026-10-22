@@ -112,8 +112,8 @@ h1 em, h2 em { color: var(--amber); font-weight: 500; }
 .mosaic-tall { grid-row: span 2; border-radius: 999px 999px 22px 22px; }
 .mosaic-tile img { object-fit: cover; transition: transform .8s ease; }
 .mosaic-tile:hover img { transform: scale(1.06); }
-.stamp { position: absolute; width: 158px; height: 158px; right: -10px; top: 48px; border-radius: 50%; filter: drop-shadow(0 16px 25px rgba(0,0,0,.23)); transform: rotate(7deg); overflow: hidden; background: var(--paper); }
-.stamp img { object-fit: cover; }
+.stamp { position: absolute; width: 158px; height: 158px; right: -10px; top: 48px; filter: drop-shadow(0 16px 25px rgba(0,0,0,.23)); }
+.stamp img { object-fit: contain; }
 .floating-label { position: absolute; left: 22px; bottom: 40px; padding: 18px 22px; display: flex; align-items: center; gap: 12px; color: var(--cocoa); background: var(--amber-light); border-radius: 15px; box-shadow: 0 20px 35px rgba(0,0,0,.2); }
 .floating-label span { font-size: .82rem; line-height: 1.35; }
 .floating-label strong { font-family: var(--font-display), serif; font-size: 1.12rem; }
