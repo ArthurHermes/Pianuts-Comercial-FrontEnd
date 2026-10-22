@@ -5,10 +5,20 @@ import { ChevronDown, MessageCircle, Minus, Plus, Search, SlidersHorizontal, Sho
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { categories, products, siteConfig, type CategoryId, type Product } from "@/data/site";
+import { findStockPackages, formatPackage, formatPrice, isHiddenOnSite, useStockPrices, type StockPackage } from "@/lib/stockPrices";
 import { withBasePath } from "@/lib/withBasePath";
 
 type Filter = "todos" | CategoryId;
-type CartItem = Product & { quantity: number };
+type CartItem = {
+  key: string;
+  name: string;
+  image: string;
+  packageLabel?: string;
+  unitPrice: number | null;
+  quantity: number;
+};
+
+const cartKey = (product: Product, productPackage?: StockPackage) => `${product.name}|${productPackage?.id ?? ""}`;
 
 // Each tag matches whole words (accent-insensitive) in the product name, description or category.
 const tagOptions = [
@@ -31,11 +41,14 @@ export function ProductShowcase() {
   const [search, setSearch] = useState("");
   const [activeTags, setActiveTags] = useState<string[]>([]);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const { stock, failed: pricesFailed } = useStockPrices();
+  const [selectedPackages, setSelectedPackages] = useState<Record<string, number>>({});
   const reduceMotion = useReducedMotion();
   const filtered = useMemo(() => {
     const term = normalize(search.trim());
 
     return products.filter((product) => {
+      if (isHiddenOnSite(product, stock)) return false;
       const category = categories.find((item) => item.id === product.category)?.label ?? "";
       const haystack = normalize([product.name, product.description, category].join(" "));
       const matchesCategory = active === "todos" || product.category === active;
@@ -43,39 +56,66 @@ export function ProductShowcase() {
       const matchesTags = activeTags.length === 0 || activeTags.every((label) => tagOptions.find((tag) => tag.label === label)?.terms.some((term) => hasWord(haystack, term)));
       return matchesCategory && matchesSearch && matchesTags;
     });
-  }, [active, activeTags, search]);
+  }, [active, activeTags, search, stock]);
   const visible = isMobile ? filtered.slice(0, visibleCount) : filtered;
   const remaining = Math.max(0, filtered.length - visible.length);
   const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+  const pricedTotal = cart.reduce((total, item) => total + (item.unitPrice ?? 0) * item.quantity, 0);
+  const hasPriced = cart.some((item) => item.unitPrice !== null);
+  const hasUnpriced = cart.some((item) => item.unitPrice === null);
+  const describeItem = (item: CartItem) => `${item.name}${item.packageLabel ? ` (${item.packageLabel})` : ""}`;
   const whatsappText = encodeURIComponent(
     cart.length
-      ? `Olá, Piá Nuts! Quero fazer um pedido:\n\n${cart.map((item) => `- ${item.quantity}x ${item.name}`).join("\n")}\n\nPode me passar valores e disponibilidade?`
+      ? [
+          "Olá, Piá Nuts! Quero fazer um pedido:",
+          "",
+          ...cart.map((item) => `- ${item.quantity}x ${describeItem(item)}${item.unitPrice !== null ? ` — ${formatPrice(item.unitPrice * item.quantity)}` : " — sob consulta"}`),
+          ...(hasPriced ? ["", `Total estimado: ${formatPrice(pricedTotal)}${hasUnpriced ? " + itens sob consulta" : ""}`] : []),
+          "",
+          hasUnpriced ? "Pode me passar os valores que faltam e a disponibilidade?" : "Pode confirmar a disponibilidade e a entrega?",
+        ].join("\n")
       : "Olá, Piá Nuts! Quero conhecer os produtos."
   );
-  const whatsappHref = `https://wa.me/5541992555036?text=${whatsappText}`;
+  const whatsappHref = `https://wa.me/${siteConfig.whatsappNumber}?text=${whatsappText}`;
 
-  const getQuantity = (name: string) => cart.find((item) => item.name === name)?.quantity ?? 0;
+  const getPackages = (product: Product) => stock ? findStockPackages(product, stock) : [];
+  const getSelectedPackage = (product: Product) => {
+    const packages = getPackages(product);
+    return packages.find((productPackage) => productPackage.id === selectedPackages[product.name]) ?? packages[0];
+  };
 
-  const addToCart = (product: Product) => {
+  const getQuantity = (key: string) => cart.find((item) => item.key === key)?.quantity ?? 0;
+
+  const addToCart = (product: Product, productPackage?: StockPackage) => {
+    const key = cartKey(product, productPackage);
     setCart((items) => {
-      const current = items.find((item) => item.name === product.name);
+      const current = items.find((item) => item.key === key);
       if (current) {
-        return items.map((item) => item.name === product.name ? { ...item, quantity: item.quantity + 1 } : item);
+        return items.map((item) => item.key === key ? { ...item, quantity: item.quantity + 1 } : item);
       }
-      return [...items, { ...product, quantity: 1 }];
+      const hasChoice = getPackages(product).length > 1;
+      return [...items, {
+        key,
+        name: product.name,
+        image: product.image,
+        packageLabel: hasChoice && productPackage ? formatPackage(productPackage) : undefined,
+        unitPrice: productPackage?.salePrice ?? null,
+        quantity: 1,
+      }];
     });
   };
 
-  const decreaseQuantity = (name: string) => {
+  const decreaseQuantity = (key: string) => {
     setCart((items) => items
-      .map((item) => item.name === name ? { ...item, quantity: item.quantity - 1 } : item)
+      .map((item) => item.key === key ? { ...item, quantity: item.quantity - 1 } : item)
       .filter((item) => item.quantity > 0)
     );
   };
 
-  const removeFromCart = (name: string) => {
-    setCart((items) => items.filter((item) => item.name !== name));
+  const removeFromCart = (key: string) => {
+    setCart((items) => items.filter((item) => item.key !== key));
   };
+
 
   const toggleTag = (tag: string) => {
     setActiveTags((tags) => tags.includes(tag) ? tags.filter((item) => item !== tag) : [...tags, tag]);
@@ -152,7 +192,10 @@ export function ProductShowcase() {
         <motion.div layout={!reduceMotion} className="product-grid">
           <AnimatePresence mode="popLayout" initial={false}>
             {visible.map((product) => {
-              const quantity = getQuantity(product.name);
+              const packages = getPackages(product);
+              const selected = getSelectedPackage(product);
+              const key = cartKey(product, selected);
+              const quantity = getQuantity(key);
 
               return (
                 <motion.article
@@ -172,19 +215,44 @@ export function ProductShowcase() {
                     <span>{categories.find((category) => category.id === product.category)?.label}</span>
                     <h3>{product.name}</h3>
                     <p>{product.description}</p>
+                    {packages.length > 1 && (
+                      <div className="package-options" role="group" aria-label={`Tamanhos de ${product.name}`}>
+                        {packages.map((productPackage) => (
+                          <button
+                            key={productPackage.id}
+                            type="button"
+                            className={productPackage.id === selected?.id ? "active" : ""}
+                            aria-pressed={productPackage.id === selected?.id}
+                            onClick={() => setSelectedPackages((current) => ({ ...current, [product.name]: productPackage.id }))}
+                          >
+                            {formatPackage(productPackage)}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    <div className={`product-price ${selected ? "" : "is-muted"}`}>
+                      {selected ? (
+                        <>
+                          <strong>{formatPrice(selected.salePrice)}</strong>
+                          {packages.length === 1 && <span>{formatPackage(selected)}</span>}
+                        </>
+                      ) : (
+                        <span>{stock || pricesFailed ? "Preço sob consulta" : "Carregando preço…"}</span>
+                      )}
+                    </div>
                     <div className="product-actions">
                       {quantity > 0 ? (
                         <div className="quantity-stepper" aria-label={`Quantidade de ${product.name}`}>
-                          <button type="button" onClick={() => decreaseQuantity(product.name)} aria-label={`Diminuir ${product.name}`}>
+                          <button type="button" onClick={() => decreaseQuantity(key)} aria-label={`Diminuir ${product.name}`}>
                             <Minus size={16} aria-hidden="true" />
                           </button>
                           <strong>{quantity}</strong>
-                          <button type="button" onClick={() => addToCart(product)} aria-label={`Adicionar mais ${product.name}`}>
+                          <button type="button" onClick={() => addToCart(product, selected)} aria-label={`Adicionar mais ${product.name}`}>
                             <Plus size={16} aria-hidden="true" />
                           </button>
                         </div>
                       ) : (
-                        <button className="add-product" type="button" onClick={() => addToCart(product)}>
+                        <button className="add-product" type="button" onClick={() => addToCart(product, selected)}>
                           <ShoppingCart size={17} aria-hidden="true" /> Adicionar
                         </button>
                       )}
@@ -236,15 +304,19 @@ export function ProductShowcase() {
         ) : (
           <div className="cart-items">
             {cart.map((item) => (
-              <div key={item.name} className="cart-item">
+              <div key={item.key} className="cart-item">
                 <div className="cart-item-image">
                   <Image src={withBasePath(item.image)} alt="" fill sizes="58px" />
                 </div>
                 <div className="cart-item-copy">
-                  <strong>{item.name}</strong>
-                  <span>{item.quantity} unidade{item.quantity > 1 ? "s" : ""}</span>
+                  <strong>{describeItem(item)}</strong>
+                  <span>
+                    {item.quantity} unidade{item.quantity > 1 ? "s" : ""}
+                    {" · "}
+                    {item.unitPrice !== null ? formatPrice(item.unitPrice * item.quantity) : "sob consulta"}
+                  </span>
                 </div>
-                <button type="button" onClick={() => removeFromCart(item.name)} aria-label={`Remover ${item.name}`}>
+                <button type="button" onClick={() => removeFromCart(item.key)} aria-label={`Remover ${describeItem(item)}`}>
                   <Trash2 size={16} aria-hidden="true" />
                 </button>
               </div>
@@ -252,10 +324,18 @@ export function ProductShowcase() {
           </div>
         )}
 
+        {hasPriced && (
+          <div className="cart-total">
+            <span>Total estimado</span>
+            <strong>{formatPrice(pricedTotal)}</strong>
+          </div>
+        )}
+        {hasPriced && hasUnpriced && <p className="cart-note">Itens sem preço são confirmados no WhatsApp.</p>}
+
         <a className={`button cart-checkout ${cart.length === 0 ? "is-disabled" : ""}`} href={cart.length ? whatsappHref : siteConfig.whatsappUrl} target="_blank" rel="noreferrer" aria-disabled={cart.length === 0}>
           Enviar pedido <MessageCircle size={18} aria-hidden="true" />
         </a>
-        <p className="cart-note">A equipe confirma valores, disponibilidade e entrega pelo WhatsApp.</p>
+        <p className="cart-note">A equipe confirma disponibilidade e entrega pelo WhatsApp.</p>
       </aside>
 
       <AnimatePresence>
@@ -269,6 +349,7 @@ export function ProductShowcase() {
           >
             <a className="cart-bar-summary" href="#carrinho">
               <ShoppingCart size={18} aria-hidden="true" /> {totalItems} {totalItems === 1 ? "item" : "itens"}
+              {hasPriced && <span className="cart-bar-total">{formatPrice(pricedTotal)}</span>}
             </a>
             <a className="button" href={whatsappHref} target="_blank" rel="noreferrer">
               Enviar pedido <MessageCircle size={17} aria-hidden="true" />

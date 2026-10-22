@@ -20,7 +20,7 @@ export function ProductCatalogPage() {
             </a>
             <span className="section-kicker">Catálogo Piá Nuts</span>
             <h1>Escolha seus produtos e monte seu pedido.</h1>
-            <p>Filtre por categoria, adicione ao carrinho e envie a lista direto pelo WhatsApp para confirmar valores, disponibilidade e entrega.</p>
+            <p>Filtre por categoria, adicione ao carrinho e envie a lista direto pelo WhatsApp para confirmar disponibilidade e entrega.</p>
             <div className="catalog-hero-points">
               <span><CheckCircle2 size={18} aria-hidden="true" /> Pedido sem compromisso</span>
               <span><PackageCheck size={18} aria-hidden="true" /> Atendimento pelo canal oficial</span>

@@ -2,34 +2,38 @@
 
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import {
-  ArrowDown, ArrowRight, Box, CheckCircle2, Instagram, Leaf,
-  MessageCircle, PackageCheck, ScanLine, ShieldCheck, ShoppingBag, Sparkles, Sprout,
+  ArrowDown, ArrowRight, CheckCircle2, ClipboardCheck, Cookie, Instagram, Leaf,
+  MessageCircle, ScanLine, ShieldCheck, ShoppingBag, Sparkles, Sprout,
 } from "lucide-react";
 import Image from "next/image";
 import { useRef } from "react";
 import { Header } from "./Header";
 import { Reveal } from "./Reveal";
 import { categories, navItems, products, siteConfig } from "@/data/site";
+import { findStockPackages, formatPackage, formatPrice, isHiddenOnSite, useStockPrices } from "@/lib/stockPrices";
 import { withBasePath } from "@/lib/withBasePath";
 
 const benefits = [
-  { icon: PackageCheck, index: "01", title: "Frescor preservado", text: "Embalagens a vácuo ajudam a proteger textura, aroma e sabor por mais tempo." },
+  { icon: Cookie, index: "01", title: "Do lanche à receita", text: "Vai bem no café da manhã, na salada, no bolo ou puro, como petisco." },
   { icon: Sprout, index: "02", title: "Seleção cuidadosa", text: "Cada item é escolhido com atenção para entregar uma experiência consistente." },
-  { icon: Sparkles, index: "03", title: "Sabor de verdade", text: "Opções naturais, torradas e temperadas para diferentes momentos do seu dia." },
+  { icon: Sparkles, index: "03", title: "Sabor de verdade", text: "Opções naturais, torradas, temperadas e caramelizadas para todos os gostos." },
   { icon: Leaf, index: "04", title: "Variedade que inspira", text: "Castanhas, nozes, sementes, frutas secas e aperitivos em um só lugar." },
 ];
 
 const trustItems = [
   { icon: ScanLine, title: "Informação clara", text: "Produtos identificados para você escolher com segurança e praticidade." },
-  { icon: Box, title: "Embalagem cuidadosa", text: "Proteção pensada para conservar as características de cada ingrediente." },
-  { icon: ShieldCheck, title: "Compra direta", text: "Navegue pelo catálogo e finalize pelo canal oficial da Piá Nuts." },
+  { icon: ClipboardCheck, title: "Pedido sem compromisso", text: "Monte sua lista, receba valores e disponibilidade e só então decida." },
+  { icon: ShieldCheck, title: "Canal oficial", text: "Pedidos e dúvidas atendidos direto pela Piá Nuts, sem intermediários." },
 ];
 
-const featuredProducts = products.filter((product) => product.featured).slice(0, 4);
+// Featured first, then the rest, so the showcase still has four cards when some are turned off in the stock system.
+const showcaseOrder = [...products.filter((product) => product.featured), ...products.filter((product) => !product.featured)];
 
 export function LandingPage() {
   const heroRef = useRef<HTMLElement>(null);
   const reduceMotion = useReducedMotion();
+  const { stock } = useStockPrices();
+  const featuredProducts = showcaseOrder.filter((product) => !isHiddenOnSite(product, stock)).slice(0, 4);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const visualY = useTransform(scrollYProgress, [0, 1], [0, reduceMotion ? 0 : -32]);
   const copyY = useTransform(scrollYProgress, [0, 1], [0, reduceMotion ? 0 : 38]);
@@ -49,7 +53,7 @@ export function LandingPage() {
               Naturalmente <em>irresistível.</em>
             </motion.h1>
             <motion.p initial={reduceMotion ? false : { opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.65, delay: 0.18 }}>
-              Castanhas, frutas secas e aperitivos selecionados, embalados com cuidado para levar mais frescor, sabor e praticidade até você.
+              Castanhas, frutas secas, sementes e aperitivos escolhidos a dedo para quem não abre mão de sabor.
             </motion.p>
             <motion.div className="hero-actions" initial={reduceMotion ? false : { opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.28 }}>
               <a className="button" href={withBasePath("/produtos/")}>Ver catálogo <ArrowRight size={19} /></a>
@@ -118,7 +122,7 @@ export function LandingPage() {
             <div className="process-list">
               <div><span>01</span><section><h3>Escolha atenta</h3><p>Variedade pensada para diferentes gostos, rotinas e ocasiões.</p></section></div>
               <div><span>02</span><section><h3>Proteção a vácuo</h3><p>Menor contato com o ar para ajudar a preservar textura e aroma.</p></section></div>
-              <div><span>03</span><section><h3>Sabor pronto</h3><p>Da embalagem para o lanche, a receita ou a mesa compartilhada.</p></section></div>
+              <div><span>03</span><section><h3>Pronto para servir</h3><p>Abriu, serviu: sem preparo e sem complicação.</p></section></div>
             </div>
             <a className="text-link dark" href={withBasePath("/produtos/")}>Conhecer produtos <ArrowRight size={18} /></a>
           </Reveal>
@@ -137,12 +141,21 @@ export function LandingPage() {
                 <article className="product-card">
                   <div className="product-image">
                     <Image src={withBasePath(product.image)} alt={product.name} fill sizes="(max-width: 620px) 86vw, (max-width: 1000px) 43vw, 24vw" />
-                    <span className="product-badge">Destaque</span>
+                    {product.featured && <span className="product-badge">Destaque</span>}
                   </div>
                   <div className="product-copy">
                     <span>{categories.find((category) => category.id === product.category)?.label}</span>
                     <h3>{product.name}</h3>
                     <p>{product.description}</p>
+                    {(() => {
+                      const [firstPackage] = stock ? findStockPackages(product, stock) : [];
+                      return firstPackage ? (
+                        <div className="product-price">
+                          <strong>{formatPrice(firstPackage.salePrice)}</strong>
+                          <span>{formatPackage(firstPackage)}</span>
+                        </div>
+                      ) : null;
+                    })()}
                   </div>
                 </article>
               </Reveal>
