@@ -24,6 +24,7 @@ export const siteConfig = {
   instagramUrl: "https://www.instagram.com/pianuts.castanhas",
   whatsappLabel: "(41) 99255-5036",
   whatsappNumber: "5541992555036",
+  cnpj: "67.496.188/0001-81",
   whatsappUrl: "https://wa.me/5541992555036?text=Ol%C3%A1%2C%20Pi%C3%A1%20Nuts!%20Quero%20conhecer%20os%20produtos.",
 } as const;
 

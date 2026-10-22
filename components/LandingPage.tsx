@@ -2,14 +2,15 @@
 
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import {
-  ArrowDown, ArrowRight, CheckCircle2, ClipboardCheck, Cookie, Instagram, Leaf,
-  MessageCircle, ScanLine, ShieldCheck, ShoppingBag, Sparkles, Sprout,
+  ArrowDown, ArrowRight, CheckCircle2, ClipboardCheck, Cookie, Leaf,
+  ScanLine, ShieldCheck, ShoppingBag, Sparkles, Sprout,
 } from "lucide-react";
 import Image from "next/image";
 import { useRef } from "react";
+import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { Reveal } from "./Reveal";
-import { categories, navItems, products, siteConfig } from "@/data/site";
+import { categories, products } from "@/data/site";
 import { findStockPackages, formatPackage, formatPrice, isHiddenOnSite, useStockPrices } from "@/lib/stockPrices";
 import { withBasePath } from "@/lib/withBasePath";
 
@@ -202,14 +203,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      <footer id="contato" className="footer">
-        <div className="container footer-grid">
-          <div className="footer-brand"><Image src={withBasePath("/brand/logo-horizontal.webp")} alt="Piá Nuts" width={220} height={92} /><p>Seleção, frescor e sabor para transformar pequenos momentos.</p></div>
-          <div><h3>Navegue</h3>{navItems.map((item) => <a key={item.href} href={withBasePath(item.href)}>{item.label}</a>)}</div>
-          <div><h3>Fale com a gente</h3><a href={siteConfig.whatsappUrl} target="_blank" rel="noreferrer"><MessageCircle size={17} /> {siteConfig.whatsappLabel}</a><a href={siteConfig.instagramUrl} target="_blank" rel="noreferrer"><Instagram size={17} /> {siteConfig.instagramLabel}</a></div>
-        </div>
-        <div className="container footer-bottom"><span>© {new Date().getFullYear()} Piá Nuts. Todos os direitos reservados.</span><a href="#inicio">Voltar ao topo ↑</a></div>
-      </footer>
+      <Footer />
     </main>
   );
 }

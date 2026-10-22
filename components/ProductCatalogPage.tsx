@@ -2,6 +2,7 @@
 
 import { ArrowLeft, CheckCircle2, PackageCheck } from "lucide-react";
 import Image from "next/image";
+import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { ProductShowcase } from "./ProductShowcase";
 import { withBasePath } from "@/lib/withBasePath";
@@ -44,6 +45,8 @@ export function ProductCatalogPage() {
           <ProductShowcase />
         </div>
       </section>
+
+      <Footer variant="internal" />
     </main>
   );
 }
