@@ -19,6 +19,12 @@ npm run build
 npm start
 ```
 
+## Deploy
+
+O site fica na Vercel (projeto `pianuts-site`, domínio `www.pianuts.com.br`). Cada push na `main` publica automaticamente.
+
+Preços, visibilidade e nome dos produtos vêm do sistema de controle pela rota pública `/public/prices` do backend.
+
 ## Conteúdo e contatos
 
 Produtos, categorias, URL da loja, WhatsApp e Instagram ficam centralizados em `data/site.ts`. Para alterar um contato ou produto, edite esse arquivo; os componentes consomem os dados automaticamente.
