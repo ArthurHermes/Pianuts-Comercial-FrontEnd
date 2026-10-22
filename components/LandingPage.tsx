@@ -52,8 +52,8 @@ export function LandingPage() {
               Castanhas, frutas secas e aperitivos selecionados, embalados com cuidado para levar mais frescor, sabor e praticidade até você.
             </motion.p>
             <motion.div className="hero-actions" initial={reduceMotion ? false : { opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.28 }}>
-              <a className="button" href={withBasePath("/produtos/")}>Ver catalogo <ArrowRight size={19} /></a>
-              <a className="text-link" href={withBasePath("/produtos/")}>Explorar sabores <ArrowDown size={18} /></a>
+              <a className="button" href={withBasePath("/produtos/")}>Ver catálogo <ArrowRight size={19} /></a>
+              <a className="text-link" href="#produtos">Explorar sabores <ArrowDown size={18} /></a>
             </motion.div>
             <motion.div className="hero-note" initial={reduceMotion ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.45 }}>
               <CheckCircle2 size={18} aria-hidden="true" /> Embalados a vácuo para preservar o que importa
@@ -103,7 +103,11 @@ export function LandingPage() {
       <section id="essencia" className="section essence-section">
         <div className="container essence-grid">
           <Reveal className="essence-visual">
-            <div className="photo-frame"><Image src={withBasePath("/products/caju-sem-sal.webp")} alt="Castanhas de caju selecionadas" fill sizes="(max-width: 800px) 90vw, 45vw" /></div>
+            <div className="photo-mosaic">
+              <div className="mosaic-tile mosaic-tall"><Image src={withBasePath("/products/pistache.webp")} alt="Pistaches selecionados" fill sizes="(max-width: 800px) 50vw, 300px" /></div>
+              <div className="mosaic-tile"><Image src={withBasePath("/products/mix-vegetais.webp")} alt="Mix de vegetais crocantes" fill sizes="(max-width: 800px) 45vw, 260px" /></div>
+              <div className="mosaic-tile"><Image src={withBasePath("/products/castanha-baru.webp")} alt="Castanha de baru embalada a vácuo" fill sizes="(max-width: 800px) 45vw, 260px" /></div>
+            </div>
             <div className="stamp"><Image src={withBasePath("/brand/stamp.webp")} alt="Selo Piá Nuts" fill sizes="150px" /></div>
             <div className="floating-label"><Leaf size={18} /><span>Da seleção<br /><strong>à sua mesa</strong></span></div>
           </Reveal>
@@ -124,7 +128,7 @@ export function LandingPage() {
       <section id="produtos" className="section products-section">
         <div className="container">
           <Reveal className="section-heading products-heading">
-            <div><span className="section-kicker light">Vitrine Piá Nuts</span><h2>Tem um sabor<br />para <em>cada momento.</em></h2></div>
+            <div><span className="section-kicker">Vitrine Piá Nuts</span><h2>Tem um sabor<br />para <em>cada momento.</em></h2></div>
             <p>Veja alguns destaques por aqui. O catálogo completo, filtros e carrinho ficam em uma tela separada.</p>
           </Reveal>
           <div className="preview-product-grid">
@@ -145,8 +149,8 @@ export function LandingPage() {
             ))}
           </div>
           <Reveal className="products-preview-action">
-            <a className="button button-light" href="/produtos">
-              Abrir catalogo <ShoppingBag size={18} aria-hidden="true" />
+            <a className="button" href={withBasePath("/produtos/")}>
+              Abrir catálogo <ShoppingBag size={18} aria-hidden="true" />
             </a>
           </Reveal>
         </div>
@@ -155,7 +159,7 @@ export function LandingPage() {
       <section id="confianca" className="section trust-section">
         <div className="container">
           <Reveal className="trust-intro">
-            <div className="mini-mascot"><Image src={withBasePath("/brand/mascote-original-v2.webp")} alt="" fill sizes="110px" /></div>
+            <div className="mini-mascot"><Image src={withBasePath("/brand/mascote.webp")} alt="" fill sizes="125px" /></div>
             <div><span className="section-kicker">Confiança se constrói</span><h2>Clareza para escolher.<br /><em>Cuidado para saborear.</em></h2></div>
           </Reveal>
           <div className="trust-grid">
@@ -175,7 +179,7 @@ export function LandingPage() {
             <span className="section-kicker light">Seu próximo snack favorito</span>
             <h2>Mais sabor para<br /><em>os seus momentos.</em></h2>
             <p>Descubra a seleção Piá Nuts e escolha o que combina com você.</p>
-            <a className="button button-light" href="/produtos">Ir para o catalogo <ArrowRight size={20} /></a>
+            <a className="button button-light" href={withBasePath("/produtos/")}>Ir para o catálogo <ArrowRight size={20} /></a>
           </Reveal>
           <div className="cta-mascot">
             <motion.div className="cta-mascot-motion" animate={reduceMotion ? undefined : { y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 4.8, ease: "easeInOut" }}>
@@ -188,7 +192,7 @@ export function LandingPage() {
       <footer id="contato" className="footer">
         <div className="container footer-grid">
           <div className="footer-brand"><Image src={withBasePath("/brand/logo-horizontal.webp")} alt="Piá Nuts" width={220} height={92} /><p>Seleção, frescor e sabor para transformar pequenos momentos.</p></div>
-          <div><h3>Navegue</h3>{navItems.map((item) => <a key={item.href} href={item.href}>{item.label}</a>)}</div>
+          <div><h3>Navegue</h3>{navItems.map((item) => <a key={item.href} href={withBasePath(item.href)}>{item.label}</a>)}</div>
           <div><h3>Fale com a gente</h3><a href={siteConfig.whatsappUrl} target="_blank" rel="noreferrer"><MessageCircle size={17} /> {siteConfig.whatsappLabel}</a><a href={siteConfig.instagramUrl} target="_blank" rel="noreferrer"><Instagram size={17} /> {siteConfig.instagramLabel}</a></div>
         </div>
         <div className="container footer-bottom"><span>© {new Date().getFullYear()} Piá Nuts. Todos os direitos reservados.</span><a href="#inicio">Voltar ao topo ↑</a></div>

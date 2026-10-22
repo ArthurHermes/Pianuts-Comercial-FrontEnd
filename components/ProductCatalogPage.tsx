@@ -14,11 +14,11 @@ export function ProductCatalogPage() {
       <section className="catalog-hero">
         <div className="container catalog-hero-grid">
           <div className="catalog-hero-copy">
-            <button className="back-link" type="button" onClick={() => { window.location.href = withBasePath("/#produtos");}}>
-          <ArrowLeft size={18} aria-hidden="true" />
-          <span>Voltar</span>
-        </button>
-            <span className="section-kicker">Catalogo Piá Nuts</span>
+            <a className="back-link" href={withBasePath("/#produtos")}>
+              <ArrowLeft size={18} aria-hidden="true" />
+              <span>Voltar</span>
+            </a>
+            <span className="section-kicker">Catálogo Piá Nuts</span>
             <h1>Escolha seus produtos e monte seu pedido.</h1>
             <p>Filtre por categoria, adicione ao carrinho e envie a lista direto pelo WhatsApp para confirmar valores, disponibilidade e entrega.</p>
             <div className="catalog-hero-points">
@@ -37,8 +37,8 @@ export function ProductCatalogPage() {
         <div className="container">
           <div className="catalog-screen-heading">
             <div>
-              <span className="section-kicker light">Produtos</span>
-              <h2>Catalogo completo</h2>
+              <span className="section-kicker">Produtos</span>
+              <h2>Catálogo completo</h2>
             </div>
           </div>
           <ProductShowcase />

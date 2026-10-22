@@ -14,11 +14,11 @@ type HeaderProps = {
 export function Header({ variant = "home" }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-  const homeHref = variant === "home" ? "#inicio" : "/#inicio";
+  const homeHref = variant === "home" ? "#inicio" : withBasePath("/#inicio");
   const productHref = withBasePath("/produtos/");
   const getNavHref = (href: string) => {
-    if (href.startsWith("/")) return href;
-    return variant === "home" ? href : `/${href}`;
+    if (href.startsWith("/")) return withBasePath(href);
+    return variant === "home" ? href : withBasePath(`/${href}`);
   };
 
   useEffect(() => {
@@ -36,11 +36,11 @@ export function Header({ variant = "home" }: HeaderProps) {
   return (
     <header className={`site-header ${scrolled ? "is-scrolled" : ""}`}>
       <div className="container header-inner">
-        <a className="brand" href={homeHref} aria-label="Pia Nuts - inicio" onClick={() => setOpen(false)}>
-          <Image src={withBasePath("/brand/logo-horizontal.webp")} alt="Pia Nuts" width={174} height={74} priority />
+        <a className="brand" href={homeHref} aria-label="Piá Nuts — início" onClick={() => setOpen(false)}>
+          <Image src={withBasePath("/brand/logo-horizontal.webp")} alt="Piá Nuts" width={200} height={90} priority />
         </a>
 
-        <nav className="desktop-nav" aria-label="Navegacao principal">
+        <nav className="desktop-nav" aria-label="Navegação principal">
           {navItems.map((item) => <a key={item.href} href={getNavHref(item.href)}>{item.label}</a>)}
         </nav>
 
@@ -55,7 +55,7 @@ export function Header({ variant = "home" }: HeaderProps) {
 
       <AnimatePresence>
         {open && (
-          <motion.nav className="mobile-nav" aria-label="Navegacao movel" initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}>
+          <motion.nav className="mobile-nav" aria-label="Navegação móvel" initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}>
             {navItems.map((item, index) => (
               <motion.a key={item.href} href={getNavHref(item.href)} onClick={() => setOpen(false)} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.05 }}>
                 <span>0{index + 1}</span>{item.label}

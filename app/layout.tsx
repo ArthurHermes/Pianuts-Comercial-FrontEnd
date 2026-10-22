@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Manrope } from "next/font/google";
+import { withBasePath } from "@/lib/withBasePath";
 import "./globals.css";
 
 const display = Fraunces({ subsets: ["latin"], variable: "--font-display", display: "swap" });
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
     siteName: "Piá Nuts",
     images: [{ url: "/og-image.webp", width: 1200, height: 630, alt: "Piá Nuts — castanhas e aperitivos selecionados" }],
   },
-  icons: { icon: "/favicon.png", apple: "/favicon.png" },
+  icons: { icon: withBasePath("/favicon.png"), apple: withBasePath("/favicon.png") },
 };
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#f7f2e7" };
