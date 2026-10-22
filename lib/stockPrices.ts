@@ -49,10 +49,14 @@ export function useStockPrices() {
   return { stock, failed };
 }
 
-/** A product linked by id is hidden when the stock system leaves it out of the public list (turned off for the site). */
+/**
+ * The stock system decides what the site shows: products not linked to it are always hidden, and linked
+ * ones are hidden once the public list loads without them (turned off for the site).
+ */
 export function isHiddenOnSite(product: Product, stock: StockProduct[] | null) {
   const productId = product.stock?.productId;
-  return Boolean(stock && productId !== undefined && !stock.some((item) => item.id === productId));
+  if (productId === undefined) return true;
+  return Boolean(stock && !stock.some((item) => item.id === productId));
 }
 
 /** Stock product linked to a site product: by id, then by name. */
